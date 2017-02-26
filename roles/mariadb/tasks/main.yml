@@ -1,0 +1,37 @@
+---
+# Variable Setup
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# Setup PHP on environment
+- include: setup-Debian.yml
+  when: ansible_os_family == "Debian"
+  static: no
+
+- name: Check MariaDB folders exists
+  file:
+     path: '{{ item.path}}'
+     state: directory
+     owner: '{{ item.owner }}'
+     group: '{{ item.group }}'
+     recurse: yes
+  with_items:
+     - { path: '/etc/mysql/conf.d', owner: 'root', group: 'root' }
+     - { path: '/var/log/mysql/', owner: 'mysql', group: 'adm' }
+     - { path: '/var/lib/mysql/', owner: 'mysql', group: 'mysql' }
+     - { path: '/var/run/mysqld', owner: 'mysql', group: 'root' }
+
+- name: Add MariaDB configuration
+  template:
+    src: '{{ mysql_conf_tpl }}'
+    dest: '{{ mysql_conf_dir }}/{{ mysql_conf_file }}'
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart mariadb
+
+- name: Start and enable service
+  service: name=mysql state=started enabled=yes
+
+- include: mysql_secure_installation.yml
+  when: mysql_secure_installation

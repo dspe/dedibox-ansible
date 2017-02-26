@@ -1,0 +1,4 @@
+---
+mariadb_apt_host: ftp.igh.cnrs.fr/pub/mariadb/repo/10.1/debian
+
+mysql_conf_dir: /etc/mysql

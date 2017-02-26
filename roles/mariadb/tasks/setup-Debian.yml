@@ -1,0 +1,15 @@
+---
+- name: Install MariaDB repository
+  apt_repository: >
+      repo='deb http://{{ mariadb_apt_host }} {{ ansible_distribution_release }} main'
+      state=present
+      filename='mariadb_10_1'
+
+- name: Add repository key to the system
+  apt_key: keyserver='keyserver.ubuntu.com' id='0xcbcb082a1bb943db' state=present
+
+- name: Install MariaDB Server
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - mariadb-server
+    - mariadb-client
