@@ -1,0 +1,13 @@
+---
+- name: Remove default nginx vhost config file (if configured).
+  file:
+      path: "{{ nginx_default_vhost_path }}"
+      state: absent
+  when: nginx_remove_default_vhost
+  notify: restart nginx
+
+- name: Ensure nginx_vhost_path exists.
+  file:
+      path: "{{ nginx_vhost_path }}"
+      state: directory
+  notify: reload nginx

@@ -1,0 +1,25 @@
+---
+- name: Install DotDeb key
+  apt_key: url='http://www.dotdeb.org/dotdeb.gpg' state=present
+
+- name: Add DotDeb repository
+  apt_repository: >
+      repo='deb http://{{ dotdeb_apt_host }} {{ ansible_distribution_release }} all'
+      state=present
+
+- name: Add Dotdeb repository (src)
+  apt_repository: >
+    repo='deb-src http://{{ dotdeb_apt_host }} {{ ansible_distribution_release }} all'
+    state="{{ 'present' if dotdeb_apt_src else 'absent' }}"
+
+- name: Update APT cache
+  apt: update_cache=yes
+
+- name: Ensure PHP packages are installed
+  apt:
+      name: "{{ item }}"
+      state: "{{ php_packages_state }}"
+      install_recommends: "{{ php_install_recommends }}"
+  with_items: "{{ php_packages | list }}"
+  register: php_package_install
+  notify: restart php-fpm

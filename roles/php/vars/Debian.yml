@@ -1,0 +1,22 @@
+---
+php_packages:
+    - php5
+    - php5-fpm
+    - php5-geoip
+    - php5-intl
+    - php5-mysqlnd
+    - php5-xsl
+    - php5-cli
+    - php5-gd
+    - php5-common
+    - php5-gd
+    - php5-mcrypt
+
+# Fpm configuration
+php_fpm_daemon: php5-fpm
+php_fpm_mods_path: "/etc/php5/mods-available"
+php_fpm_cli_path: "/etc/php5/cli"
+php_fpm_conf_path: "/etc/php5/fpm"
+php_fpm_pool_conf_path: "{{ php_fpm_conf_path }}/pool.d/"
+php_fpm_pool_user: www-data
+php_fpm_pool_group: www-data

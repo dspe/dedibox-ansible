@@ -1,0 +1,18 @@
+---
+- name: restart php-fpm
+  debug: msg="Check configuration and restart"
+  changed_when: True
+  notify:
+    - check fpm configuration
+    - restart daemon
+
+- name: check fpm configuration
+  command: '/usr/sbin/{{ php_fpm_daemon }} -t'
+  register: fpm_conf_status
+  failed_when: >
+      ("ERROR" in fpm_conf_status.stderr)
+
+- name: restart daemon
+  service:
+    name: "{{ php_fpm_daemon }}"
+    state: restarted

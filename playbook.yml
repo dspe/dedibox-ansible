@@ -1,0 +1,5 @@
+---
+- hosts: all
+  roles:
+    - { role: php, debian_php_version: 5.6 }
+    - role: nginx

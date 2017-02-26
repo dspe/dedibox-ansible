@@ -1,0 +1,51 @@
+---
+- name: Deploy php.ini for FPM configuration
+  template:
+    src: '{{ php_ini_fpm }}'
+    dest: '{{ php_fpm_conf_path }}/conf.d/99-custom.ini'
+    owner: root
+    group: root
+    mode: 0644
+  notify: 'restart php-fpm'
+
+- name: Deply php.ini for CLI configuration
+  template:
+    src: '{{ php_ini_cli }}'
+    dest: '{{ php_fpm_cli_path }}/conf.d/99-custom.ini'
+    owner: root
+    group: root
+    mode: 0644
+  notify: 'restart php-fpm'
+
+- name: Configure OPCache
+  template:
+    src: '{{ php_opcache_file }}'
+    dest: '{{ php_fpm_mods_path }}/opcache.ini'
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+  notify: 'restart php-fpm'
+
+- name: Create required directories
+  file:
+    path: '{{ item }}'
+    state: directory
+  with_items:
+      - '/var/run/nginx/'
+      - '/var/log/nginx/www/'
+      - '/var/log/nginx/tps/'
+      - '/var/log/nginx/tps2/'
+  notify: 'restart php-fpm'
+
+- name: Deploy Pool FPM configuration
+  template:
+     src: '{{ item }}'
+     dest: '{{ php_fpm_pool_conf_path }}{{ item | basename }}'
+     owner: root
+     group: root
+     mode: 0644
+     force: yes
+  with_fileglob:
+     - '*.conf'
+  notify: 'restart php-fpm'
